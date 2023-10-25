@@ -14,11 +14,9 @@ function App() {
     const fieldConfig = formFields.find((field) => field.id === id);
 
     let hasError = false;
-
     if (fieldConfig.validation) {
       hasError = !value.match(fieldConfig.validation);
     }
-
     if (id === "confirmpassword" && value !== inputs.password) {
       hasError = true;
     }
@@ -26,9 +24,7 @@ function App() {
     setInputs({ ...inputs, [id]: value, [`${id}Error`]: hasError });
   };
 
-  const handleClick = (e) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     const hasErrors = formFields.some((field) => {
       return (
         (inputs[field.id] === "" && field.required) ||
@@ -39,8 +35,8 @@ function App() {
     if (hasErrors) {
       formFields.forEach((field) => {
         const hasError = !inputs[field.id] || inputs[`${field.id}Error`];
-        setInputs((prevState) => ({
-          ...prevState,
+        setInputs((prev) => ({
+          ...prev,
           [`${field.id}Error`]: hasError,
         }));
       });
@@ -83,7 +79,7 @@ function App() {
           fullWidth
           variant="contained"
           color="secondary"
-          onClick={handleClick}
+          onClick={handleSubmit}
         >
           Submit
         </Button>
