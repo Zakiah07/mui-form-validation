@@ -6,48 +6,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { StyledBox } from "./styles.js";
+import { Container, StyledBox } from "./styles.js";
 import { useState } from "react";
-
-const formFields = [
-  {
-    id: "name",
-    label: "Name",
-    type: "text",
-    validation: /^[a-zA-Z ]+$/,
-    errorMessage: "Name must exceed 3 characters and contain alphabets only",
-  },
-  {
-    id: "date",
-    label: "Date of Birth",
-    type: "date",
-  },
-  {
-    id: "email",
-    label: "Email Address",
-    type: "email",
-    validation: /^[a-zA-Z0-9@.-]+$/,
-    errorMessage: "Email must be in a valid email form",
-  },
-  {
-    id: "password",
-    label: "Password",
-    type: "password",
-    validation: /^[a-zA-Z0-9@.-]+$/,
-    errorMessage:
-      "Password must consists of numbers, letter and special characters",
-  },
-  {
-    id: "confirmpassword",
-    label: "Confirm Password",
-    type: "password",
-    validation: /^[a-zA-Z0-9@.-]+$/,
-    errorMessage: "Password must be same as above",
-  },
-];
+import { formFields } from "./formData.js";
 
 function App() {
-  const [form, setForm] = useState(
+  const [inputs, setInputs] = useState(
     formFields.reduce((acc, field) => ({ ...acc, [field.id]: "" }), {})
   );
   const [open, setOpen] = useState(false);
@@ -56,23 +20,40 @@ function App() {
     const { id, value } = e.target;
     const fieldConfig = formFields.find((field) => field.id === id);
 
-    const hasError = !value.match(fieldConfig.validation);
+    let hasError = false;
 
-    setForm({ ...form, [id]: value, [`${id}Error`]: hasError });
+    if (fieldConfig.validation) {
+      hasError = !value.match(fieldConfig.validation);
+    }
+
+    if (id === "confirmpassword" && value !== inputs.password) {
+      hasError = true;
+    }
+
+    setInputs({ ...inputs, [id]: value, [`${id}Error`]: hasError });
   };
 
   const handleClick = (e) => {
     e.preventDefault();
-    setOpen(true);
 
-    const hasErrors = formFields.some((field) =>
-      field.validate(form[field.id])
-    );
+    const hasErrors = formFields.some((field) => {
+      return (
+        (inputs[field.id] === "" && field.required) ||
+        inputs[`${field.id}Error`]
+      );
+    });
 
     if (hasErrors) {
-      <p>CheckData</p>;
+      formFields.forEach((field) => {
+        const hasError = !inputs[field.id] || inputs[`${field.id}Error`];
+        setInputs((prevState) => ({
+          ...prevState,
+          [`${field.id}Error`]: hasError,
+        }));
+      });
     } else {
-      setForm();
+      console.log(inputs);
+      setOpen(true);
     }
   };
 
@@ -84,53 +65,51 @@ function App() {
   };
 
   return (
-    <StyledBox
-      component="form"
-      sx={{
-        "& .MuiTextField-root": { m: 1, width: "25ch" },
-      }}
-      autoComplete="off"
-    >
-      <Typography variant="h4">Sign up now!</Typography>
-      {formFields.map((field) => (
-        <TextField
-          key={field.id}
+    <Container>
+      <StyledBox
+        component="form"
+        autoComplete="off"
+      >
+        <Typography variant="h4">Sign up now!</Typography>
+        {formFields.map((field) => (
+          <TextField
+            key={field.id}
+            fullWidth
+            variant="outlined"
+            id={field.id}
+            label={field.label}
+            type={field.type}
+            value={inputs[field.id]}
+            onChange={handleInputsChange}
+            error={inputs[`${field.id}Error`]}
+            InputLabelProps={field.InputLabelProps}
+            helperText={inputs[`${field.id}Error`] ? field.errorMessage : ""}
+            required={field.required}
+          />
+        ))}
+        <Button
           fullWidth
-          variant="outlined"
-          id={field.id}
-          label={field.label}
-          value={form[field.id]}
-          onChange={handleInputsChange}
-          error={form[`${field.id}Error`]}
-          helperText={form[`${field.id}Error`] ? field.errorMessage : ""}
-          required
-        />
-      ))}
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleClick}
-      >
-        Submit
-      </Button>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-      >
-        <Alert
-          severity="success"
+          variant="contained"
+          color="secondary"
+          onClick={handleClick}
+        >
+          Submit
+        </Button>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
           onClose={handleClose}
         >
-          <AlertTitle>Success</AlertTitle>
-          You have signed up! Thanks!
-        </Alert>
-      </Snackbar>
-      {/* <Alert severity="error">
-        <AlertTitle>Error</AlertTitle>
-        Ops, please check your data.
-      </Alert> */}
-    </StyledBox>
+          <Alert
+            severity="success"
+            onClose={handleClose}
+          >
+            <AlertTitle>Success</AlertTitle>
+            You have signed up! Thanks!
+          </Alert>
+        </Snackbar>
+      </StyledBox>
+    </Container>
   );
 }
 
