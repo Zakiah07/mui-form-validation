@@ -1,12 +1,5 @@
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  Snackbar,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { Container, StyledBox } from "./styles.js";
+import { Alert, AlertTitle, Button, Snackbar, Typography } from "@mui/material";
+import { Container, StyledBox, StyledTextField } from "./styles.js";
 import { useState } from "react";
 import { formFields } from "./formData.js";
 
@@ -72,9 +65,8 @@ function App() {
       >
         <Typography variant="h4">Sign up now!</Typography>
         {formFields.map((field) => (
-          <TextField
+          <StyledTextField
             key={field.id}
-            fullWidth
             variant="outlined"
             id={field.id}
             label={field.label}

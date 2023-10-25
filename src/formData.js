@@ -3,8 +3,8 @@ export const formFields = [
     id: "name",
     label: "Full Name",
     type: "text",
-    validation: /^[a-zA-Z ]{3,}$/,
-    errorMessage: "Name must exceed 3 characters and contain letters only",
+    validation: /^[a-zA-Z ]{4,}$/,
+    errorMessage: "Name must exceed 3 letters",
     required: true,
   },
   {
@@ -15,7 +15,7 @@ export const formFields = [
     InputLabelProps: {
       shrink: true,
     },
-    errorMessage: "This field is required",
+    errorMessage: "Choose birthdate",
   },
   {
     id: "email",
@@ -29,15 +29,14 @@ export const formFields = [
     id: "password",
     label: "Password",
     type: "password",
-    validation: /^[a-zA-Z0-9]+$/,
-    errorMessage: "Password must consists of numbers and letters",
+    validation: /^(?=.*[a-zA-Z])(?=.*[0-9]).{6,}$/,
+    errorMessage: "Password must be at least 6 numbers and letters",
     required: true,
   },
   {
     id: "confirmpassword",
     label: "Confirm Password",
     type: "password",
-    validation: /^[a-zA-Z0-9]+$/,
     errorMessage: "Password must match the one above",
     required: true,
   },
